@@ -9,22 +9,132 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+还未插入引用
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Hackathon
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Dataset
 
-```{r cars}
-summary(cars)
+
+
+## Variables and Descriptions
+
+
+
+## Research Questions
+
+
+## Exploratory Data Analysis
+
+### Load packages
+
+Here, we load the packages which is required for the analysis.
+
+```{r, message=FALSE, warning=FALSE}
+# load tidyverse package for data wrangling and processing
+library(tidyverse)
+# load visdat package for identifying missing values and data types
+library(visdat)
+# load Hmisc package for data visualization and correlation analysis
+library(Hmisc)
+# load corrplot package for correlation analysis
+library(corrplot)
+# load skimr package for data summary
+library(skimr)
 ```
 
-## Including Plots
+### Load data
 
-You can also embed plots, for example:
+Here, we load the dataset and check the structure of the dataset.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+raw_data = read_csv('')
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Then, we want to check the structure of the dataset, and remove the variables which is not used in the analysis.
+
+```{r}
+# check the structure of the dataset
+str(raw_data)
+names(raw_data)
+```
+
+
+### Data Wrangling
+
+Here, we want to check the missing values in the dataset.
+
+```{r}
+# check the missing values in the dataset
+vis_dat(tided_data)
+```
+
+
+### Analysis
+
+
+```{r, message = FALSE, warning = FALSE, fig.width = 15, fig.height = 15}
+# as some of the variables are factor variables, we need to convert them to numeric variables before we calculate the correlation matrix.
+# lapply function is used to apply the function to each column of the dataset. Here, we use the as.numeric function to convert the factor variables to numeric variables.
+correlation_data = as.data.frame(lapply(tided_data,as.numeric))
+# calculate the correlation matrix
+# rcorr function is used to calculate the correlation matrix. It requies the input to be a matrix, therefore, we use the as.matrix function to convert the dataset to a matrix.
+# As we are using data converted from factors, we use the spearman correlation instead of pearson correlation to calculate the correlation matrix.
+correlation_matrix = rcorr(as.matrix(correlation_data),type = "spearman")
+# extract the correlation coefficient and the p-value from the correlation matrix, and round the correlation coefficient to 2 decimal places(There is not enough room for longer decimal places in the plot).
+cors = round(correlation_matrix$r,2)
+# extract the p-value from the correlation matrix
+mat = correlation_matrix$P
+# replace the NA value in the p-value matrix with 0, otherwise the corrplot function will retuen an error.
+mat[is.na(mat)] = 0
+# plot the correlation matrix
+# corrplot function is used to plot the correlation matrix. the meaning of each parameter can be found in the corrplot package using ?corrplot.
+corrplot(
+  # correlation coefficient matrix
+  cors,
+  # p-value matrix
+  p.mat = mat,
+  # plot the upper triangle of the correlation matrix
+  # method = "shade" selects the visualization method. Here, we use the shade method(simplely because it looks better than the other methods).
+  method = "shade",
+  # plot the upper triangle of the correlation matrix
+  type = 'upper',
+  # insig = 'blank' means that the correlation coefficient which is not significant will be displayed as blank.
+  insig = 'blank',
+  # add the correlation coefficient on the plot and set the color as black
+  addCoef.col = 'black',
+  # order the variables based on the hierarchical clustering. This allows us to see the relationship between the variables more clearly.
+  order = 'hclust',
+  # set the color of the text lables as black
+  tl.col = 'black',
+  # display the correlation coefficient on the diagonal of the plot
+  diag = T,
+  # set the position of the text lables as left-top
+  tl.pos = 'lt',
+  # select cor higher than 0.05 to be displayed.
+  sig.level = 0.05,
+  # set the size of the text lables as 0.9
+  tl.cex = 0.9,
+  # let the text lables be rotated by 30 degrees
+  tl.srt = 30
+) 
+# the code below is simillar to the code above, but it plots the lower triangle of the correlation matrix.
+# arguements that is the same as the code above is not commented.
+  corrplot(
+  cors,
+  method = "shade",
+  type = 'lower',
+  addCoef.col = 'black',
+  order = 'hclust',
+  tl.col = 'black',
+  # add = T means that the plot will be added to the previous plot.
+  add = T,
+  # tl.pos = 'n' means that the text lables will not be displayed(because it's already displayed in the previous plot).
+  tl.pos = 'n',
+  # cl.pos = 'n' means that the color legend will not be displayed(because it's already displayed in the previous plot).
+  cl.pos = 'n'
+)
+# add the title to the plot
+title("Correration Matrix for All Variables")
+```
+
