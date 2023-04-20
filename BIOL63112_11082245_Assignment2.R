@@ -128,6 +128,16 @@ corrplot(
 # add the title to the plot
 title("Correration Matrix for All Variables")
 
+# draw a radar plot groupded by Region
+radar_data = raw_data %>%
+  # summarize by region
+  group_by(Region) %>%
+  select_if(is.numeric) %>%
+  summarize_all(mean)
+
+
+
+
 m1 = lm(Life_expectancy ~ Year, data = raw_data)
 summary(m1)
 ggplot(raw_data, aes(x = Year, y = Life_expectancy,colour =Economy_status )) +
@@ -147,7 +157,7 @@ m2 = lmer(Life_expectancy ~ Infant_deaths + Under_five_deaths + Adult_mortality 
 summary(m2)
 check_model(m2)
 
-# 地区热图，综合热图
+# 地区热图，综合热图 Y
 # 分地区探索/国家/年份探索————————意义是什么？
 # 使用什么模型？
 # 如何解释结果
