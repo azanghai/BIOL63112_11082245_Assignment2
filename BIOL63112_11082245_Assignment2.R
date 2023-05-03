@@ -110,7 +110,7 @@ summarized_data = raw_data %>%
 
 
 
-correlation_data = lapply(summarized_data, as.numeric) %>%
+correlation_data = lapply(summarized_data %>% select(c(-Country,-Region)), as.numeric) %>%
   as.data.frame() %>%
   as.matrix() %>%
   rcorr()

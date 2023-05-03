@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Hackathon
 
-In this assignment, a dataset downloaded from Kaggle was explored. The dataset was about the variables which may predict life expectancy. It was downloaded from https://www.kaggle.com/kumarajarshi/life-expectancy-who. The variables were corrected by the user and were completely updated from reliable source(WHO, World Bank etc.). Meanwhile, based on the dataset, four questions were raised and answered using different models.
+In this assignment, a dataset downloaded from Kaggle was explored. The dataset was about the variables which may predict life expectancy. It was downloaded from https://www.kaggle.com/kumarajarshi/life-expectancy-who. The variables were corrected by the user and were completely updated from reliable source(WHO, World Bank etc.). Meanwhile, based on the dataset, four questions were raised and answered using different models. This file is also uploaded to my [GitHub repository](link:)
 
 ## Data
 
@@ -21,7 +21,7 @@ The data included 21 variables as below:
 
 -  **Country**: List of the 179 countries(Sudan, South Sudan and North Korea are omitted due to lack of data)
 
--  **Region**: 179 countries are distributed in 9 regions. E.g. Africa, Asia, Oceania, European Union, Rest of Europe and etc.
+-  **Region**: 179 countries are distributed in 9 regions. E.g. Africa, Asia, Oceania, European Union, Rest of Europe etc.
 
 -  **Year**: Years observed from 2000 to 2015
 
@@ -119,7 +119,7 @@ raw_data = read_csv("Life-Expectancy-Data-Updated.csv")
 vis_dat(raw_data)
 ```
 
-The graph from visdat looks good, there is no missing value and there are only two data types, numeric and character, which is good for further processing.
+The graph from `visdat` looks good, there is no missing value, and there are only two data types, numeric and character, which is good for further processing.
 
 As there are several variables, we would like to take a look at the summary of each variable to have a basic impression of the data.
 ```{r}
@@ -130,7 +130,7 @@ skim(raw_data) %>%
   filter(skim_type == "numeric")
 ```
 
-From the summary chat above, we can find that life expectancy varies from 39.4 to 83.8. This indicates that some people may live twice as long as others. This is a huge difference. Therefore, we would like to explore the factors that affect life expectancy. The rest of the variables also looks good for further analysis.
+From the summary chat above, we can find that life expectancy varies from 39.4 to 83.8. This indicates that some people may live twice as long as others. This is a huge difference. Therefore, we would like to explore the factors that affect life expectancy. The rest of the variables also look good for further analysis.
 
 As the data almost included every country in the world, we would like to plot a heatmap to see the conditions of life expectancy in different countries. However, some names of the countries require updated to match the map data.
 ```{r}
@@ -155,7 +155,7 @@ raw_data$Country[raw_data$Country =="Venezuela, RB"] = "Venezuela"
 raw_data$Country[raw_data$Country =="Central African Republic"] = "Central African Rep."
 ```
 
-Meanwhile, we would like to merge Economy status into one variable and convert the .
+Meanwhile, we would like to merge Economy status into one variable and convert variable into appropriate data type.
 ```{r}
 # raw_data = raw_data means that we are modifying and saving the data in the same data frame.
 raw_data = raw_data %>%
@@ -197,3 +197,77 @@ summarized_data = raw_data %>%
 
 The dataset contains a lot of variables and can be very complicated. Therefore, we would like to explore the data by plotting a correlation heatmap to explore the relationship between variables(especially with variable life expectancy).
 ```{r}
+# the correlation is a variable we use to store the correlation data.
+# lapply function is used to apply a function to each variable.
+# as.numeric function is used to convert the variable into numeric. this is because the correlation function only works with numeric variables.
+# as Country and Region has no meaning in the correlation heatmap(it would be pointless converting them into ), we would like to remove them.
+# the "-" symble in select is used to remove the variable.
+correlation_data = lapply(summarized_data %>% select(c(-Country,-Region)), as.numeric) %>%
+  # as the lapply function returns a list, we would like to convert it into a data frame.
+  as.data.frame() %>%
+  # as.matrix function is used to convert the data frame into a matrix. This is because the rcorr function only works with matrix. However, we cannot only use as.matrix function as it would cause nesting probelm with variables.
+  as.matrix() %>%
+  # rcorr function is used to calculate the correlation between variables. this function returns a matrix with the correlation ,numbers and p-value.
+  # type = "pearson" means that we are using pearson correlation coefficient.
+  # as there is only one factor variable(Economy_status, and it is not the variable we want to explore), using pearson correlation coefficient is acceptable.
+  rcorr(type = "pearson")
+
+# round function is used to round the correlation coefficient to 2 decimal places. We aredoing this because the correlation coefficient is too long and round it to 2 decimal places can make the heatmap looks better.
+cors = round(correlation_data$r,2)
+# extract the p-value from the correlation matrix and store it in a new variable
+mat = correlation_data$P
+# replace the NA value in the p-value matrix with 0, otherwise the corrplot function will retuen an error.
+mat[is.na(mat)] = 0
+
+# plot the correlation matrix
+# corrplot function is used to plot the correlation matrix. the meaning of each parameter can be found in the corrplot package using ?corrplot.
+corrplot(
+  # correlation coefficient matrix
+  cors,
+  # p-value matrix
+  p.mat = mat,
+  # plot the upper triangle of the correlation matrix
+  # method = "shade" selects the visualization method. Here, we use the shade method(simplely because it looks better than the other methods).
+  method = "shade",
+  # plot the upper triangle of the correlation matrix
+  type = 'upper',
+  # insig = 'blank' means that the correlation coefficient which is not significant will be displayed as blank.
+  insig = 'blank',
+  # add the correlation coefficient on the plot and set the color as black
+  addCoef.col = 'black',
+  # order the variables based on the hierarchical clustering. This allows us to see the relationship between the variables more clearly.
+  order = 'hclust',
+  # set the color of the text lables as black
+  tl.col = 'black',
+  # display the correlation coefficient on the diagonal of the plot
+  diag = T,
+  # set the position of the text lables as left-top
+  tl.pos = 'lt',
+  # select cor higher than 0.05 to be displayed.
+  sig.level = 0.05,
+  # set the size of the text lables as 0.9
+  tl.cex = 0.9,
+  # let the text lables be rotated by 30 degrees
+  tl.srt = 30
+)
+# the code below is simillar to the code above, but it plots the lower triangle of the correlation matrix.
+# arguements that is the same as the code above is not commented.
+corrplot(
+  cors,
+  method = "shade",
+  type = 'lower',
+  addCoef.col = 'black',
+  order = 'hclust',
+  tl.col = 'black',
+  # add = T means that the plot will be added to the previous plot.
+  add = T,
+  # tl.pos = 'n' means that the text lables will not be displayed(because it's already displayed in the previous plot).
+  tl.pos = 'n',
+  # cl.pos = 'n' means that the color legend will not be displayed(because it's already displayed in the previous plot).
+  cl.pos = 'n'
+)
+# add the title to the plot
+title("Correration Matrix for Variables")
+```
+
+In the correlation heatmap, the upper triangle only shows the correlation coefficient between variables which is significant(p<0.05), while the lower triangle shows all the correlation coefficient between variables. Darker colour indicates that the correlation coefficient is closer to 1(or -1), while lighter colour indicates that the correlation coefficient is closer to 0. From the correlation heatmap, we can see that the life expectancy is highly correlated with
