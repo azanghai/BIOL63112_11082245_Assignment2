@@ -3,32 +3,83 @@ title: "BIOL63112_11082245_Assignment2"
 author: '11082245'
 date: "2023-04-18"
 output: html_document
+bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-还未插入引用
 
 # Hackathon
 
-## Dataset
+In this assignment, a dataset downloaded from Kaggle was explored. The dataset was about the variables which may predict life expectancy. It was downloaded from https://www.kaggle.com/kumarajarshi/life-expectancy-who. The variables were corrected by the user and were completely updated from reliable source(WHO, World Bank etc.). Meanwhile, based on the dataset, four questions were raised and answered using different models.
 
+## Data
 
+The data included 21 variables as below:
 
-## Variables and Descriptions
+-  **Country**: List of the 179 countries(Sudan, South Sudan and North Korea are omitted due to lack of data)
 
+-  **Region**: 179 countries are distributed in 9 regions. E.g. Africa, Asia, Oceania, European Union, Rest of Europe and etc.
 
+-  **Year**: Years observed from 2000 to 2015
 
-## Research Questions
+-  **Infant_deaths**: Represents infant deaths per 1000 population
 
+-  **Under_five_deaths**: Represents deaths of children under five years old per 1000 population
 
-## Exploratory Data Analysis
+-  **Adult_mortality**: Represents deaths of adults per 1000 population
 
-### Load packages
+-  **Alcohol_consumption**: Represents alcohol consumption that is recorded in liters of pure alcohol per capita with 15+ years old
 
-Here, we load the packages which is required for the analysis.
+-  **Hepatitis_B**: Represents % of coverage of Hepatitis B (HepB3) immunization among 1-year-olds.
+
+-  **Measles**: Represents % of coverage of Measles containing vaccine first dose (MCV1) immunization among 1-year-olds
+
+-  **BMI**: Represents the mean BMI of the population
+
+-  **Polio**: Represents % of coverage of Polio (Pol3) immunization among 1-year-olds
+
+-  **Diphtheria**: Represents % of coverage of Diphtheria (Dip3) immunization among 1-year-olds
+
+-  **Incidents_Hiv**: Incidents of HIV per 1000 population aged 15-49
+
+-  **GDP_per_capita**: Represents the GDP per capita in current USD
+
+-  **Population_mln**: Total population in millions
+
+-  **Thinness_ten_nineteen_years**: Prevalence of thinness among adolescents aged 10-19 years. BMI < -2 standard deviations below the median.
+
+-  **Thinness_five_nine_years**: Prevalence of thinness among children aged 5-9 years. BMI < -2 standard deviations below the median.
+
+-  **Schooling**: Average years that people aged 25+ spent in formal education
+
+-  **Economy_status_Developed**: Developed country
+
+-  **Economy_status_Developing**: Developing country
+
+-  **Life_expectancy**: Average life expectancy of both genders in different years from 2010 to 2015
+
+## Research questions
+
+As we have a lot of variables in the dataset, naturally we wondered which variable could affect life expectancy. Therefore, we raised research question one:
+
+-  **Question 1**: What are the factors that affect life expectancy?
+
+Similar research had found that education could affect life expectancy in Norway. Therefore, we raised research question two to explore the relationship between education and life expectancy:
+
+- **Question 2**: What is the impact of education on life expectancy?
+
+An interesting variable in the dataset is alcohol consumption. We wondered whether alcohol consumption has different effects on life expectancy in different regions. Therefore, research question three was raised:
+
+- **Question 3**: What is the relationship between drinking and life expectancy in the European Union and Asia?
+
+Research has discovered a linear relationship between the GDP of developing countries and their healthcare expenditures, as well as life expectancy. In this context, we aim to further investigate this relationship, leading us to propose the following research question:
+
+- **Question 4**: What is the relationship between life expectancy and GDP?
+
+## Packages required for this assignment
 
 ```{r, message=FALSE, warning=FALSE}
 # load tidyverse package for data wrangling and processing
@@ -41,100 +92,108 @@ library(Hmisc)
 library(corrplot)
 # load skimr package for data summary
 library(skimr)
+# load lme4 package for linear mixed models
+library(lme4)
+# load lmerTest package for linear mixed models
+library(lmerTest)
+# load performance package for model selection
+library(performance)
+# following four packages are for map data visualization.
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(maps)
+# load olsrr package for stepwise regression
+library(olsrr)
+# load modelr package for gathering model predictions
+library(modelr)
 ```
 
-### Load data
-
-Here, we load the dataset and check the structure of the dataset.
-
+## Data wrangling
 ```{r}
-raw_data = read_csv('')
+# read the data use function built in dpplr package, also I'm using Rproject, so I can just use the file name.
+raw_data = read_csv("Life-Expectancy-Data-Updated.csv")
+
+# check the data type and missing values
+# Here we use vis_dat function from visdat package to check the data type and missing values
+vis_dat(raw_data)
 ```
 
-Then, we want to check the structure of the dataset, and remove the variables which is not used in the analysis.
+The graph from visdat looks good, there is no missing value and there are only two data types, numeric and character, which is good for further processing.
 
+As there are several variables, we would like to take a look at the summary of each variable to have a basic impression of the data.
 ```{r}
-# check the structure of the dataset
-str(raw_data)
-names(raw_data)
+# use skim function from skimr package to check the summary of each variable
+# the %>% is a pipe operator, which is used to connect the output of one function to the input of another function. I find it very useful in this assignment.
+skim(raw_data) %>%
+  # as the character variable information provided by the skim function is not that useful, so I filter it out.
+  filter(skim_type == "numeric")
 ```
 
+From the summary chat above, we can find that life expectancy varies from 39.4 to 83.8. This indicates that some people may live twice as long as others. This is a huge difference. Therefore, we would like to explore the factors that affect life expectancy. The rest of the variables also looks good for further analysis.
 
-### Data Wrangling
-
-Here, we want to check the missing values in the dataset.
-
+As the data almost included every country in the world, we would like to plot a heatmap to see the conditions of life expectancy in different countries. However, some names of the countries require updated to match the map data.
 ```{r}
-# check the missing values in the dataset
-vis_dat(tided_data)
+#the $ symbol is used to select a column from a data frame,then the [] is used to select the rows that meet the condition.
+raw_data$Country[raw_data$Country == "Turkiye"] = "Turkey"
+raw_data$Country[raw_data$Country == "Russian Federation"] = "Russia"
+raw_data$Country[raw_data$Country == "Bahamas, The"] = "Bahamas"
+raw_data$Country[raw_data$Country =="Gambia, The"] = "Gambia"
+raw_data$Country[raw_data$Country =="Kyrgyz Republic"] = "Kyrgyzstan"
+raw_data$Country[raw_data$Country == "Brunei Darussalam"] = "Brunei"
+raw_data$Country[raw_data$Country == "Yemen, Rep."] = "Yemen"
+raw_data$Country[raw_data$Country =="Micronesia, Fed. Sts."] = "Micronesia"
+raw_data$Country[raw_data$Country =="Congo, Rep."] = "Congo"
+raw_data$Country[raw_data$Country =="Congo, Dem. Rep."] = "Dem. Rep. Congo"
+raw_data$Country[raw_data$Country =="Eswatini"] = "Swaziland"
+raw_data$Country[raw_data$Country =="Egypt, Arab Rep."] = "Egypt"
+raw_data$Country[raw_data$Country =="Syrian Arab Republic"] = "Syria"
+raw_data$Country[raw_data$Country =="Cote d'Ivoire"] = "Ivory Coast"
+raw_data$Country[raw_data$Country =="Iran, Islamic Rep."] = "Iran"
+raw_data$Country[raw_data$Country =="Lao PDR"] = "Laos"
+raw_data$Country[raw_data$Country =="Venezuela, RB"] = "Venezuela"
+raw_data$Country[raw_data$Country =="Central African Republic"] = "Central African Rep."
 ```
 
+Meanwhile, we would like to merge Economy status into one variable and convert the .
+```{r}
+# raw_data = raw_data means that we are modifying and saving the data in the same data frame.
+raw_data = raw_data %>%
+  # mutate function is used to create new variables or modify existing variables.
+  # ifelse function is used to create a new variable based on the condition. in this case, if the value in Economy_status_Developed is 1, then the new variable(Economy_ststus) will be Developed, otherwise, it will be Developing.
+  mutate(Economy_status = ifelse(Economy_status_Developed == 1, "Developed", "Developing")) %>%
+  # select function is used to select the variables we want to keep(or not).
+  # as we have created a new variable(Economy_status), we can remove the two variables(Economy_status_Developed, Economy_status_Developing).
+  select(-Economy_status_Developed, -Economy_status_Developing) %>%
+  # mutate function is used to create new variables or modify existing variables.
+  # as some variable is charactor, we would like to convert it to factor for the convience of further analysis.
+  mutate(Economy_status = factor(Economy_status)) %>%
+  mutate(Country = factor(Country)) %>%
+  mutate(Region = factor(Region)) %>%
+  mutate(Year = factor(Year)) %>%
+  # fct_relevel function is used to reorder the levels of a factor.
+  # in this case, we would like to reorder the levels of Economy_status, so that the Developed level is the first level.
+  mutate(Economy_status = fct_relevel(Economy_status, "Developed","Developing"))
 
-### Analysis
-
-
-```{r, message = FALSE, warning = FALSE, fig.width = 15, fig.height = 15}
-# as some of the variables are factor variables, we need to convert them to numeric variables before we calculate the correlation matrix.
-# lapply function is used to apply the function to each column of the dataset. Here, we use the as.numeric function to convert the factor variables to numeric variables.
-correlation_data = as.data.frame(lapply(tided_data,as.numeric))
-# calculate the correlation matrix
-# rcorr function is used to calculate the correlation matrix. It requies the input to be a matrix, therefore, we use the as.matrix function to convert the dataset to a matrix.
-# As we are using data converted from factors, we use the spearman correlation instead of pearson correlation to calculate the correlation matrix.
-correlation_matrix = rcorr(as.matrix(correlation_data),type = "spearman")
-# extract the correlation coefficient and the p-value from the correlation matrix, and round the correlation coefficient to 2 decimal places(There is not enough room for longer decimal places in the plot).
-cors = round(correlation_matrix$r,2)
-# extract the p-value from the correlation matrix
-mat = correlation_matrix$P
-# replace the NA value in the p-value matrix with 0, otherwise the corrplot function will retuen an error.
-mat[is.na(mat)] = 0
-# plot the correlation matrix
-# corrplot function is used to plot the correlation matrix. the meaning of each parameter can be found in the corrplot package using ?corrplot.
-corrplot(
-  # correlation coefficient matrix
-  cors,
-  # p-value matrix
-  p.mat = mat,
-  # plot the upper triangle of the correlation matrix
-  # method = "shade" selects the visualization method. Here, we use the shade method(simplely because it looks better than the other methods).
-  method = "shade",
-  # plot the upper triangle of the correlation matrix
-  type = 'upper',
-  # insig = 'blank' means that the correlation coefficient which is not significant will be displayed as blank.
-  insig = 'blank',
-  # add the correlation coefficient on the plot and set the color as black
-  addCoef.col = 'black',
-  # order the variables based on the hierarchical clustering. This allows us to see the relationship between the variables more clearly.
-  order = 'hclust',
-  # set the color of the text lables as black
-  tl.col = 'black',
-  # display the correlation coefficient on the diagonal of the plot
-  diag = T,
-  # set the position of the text lables as left-top
-  tl.pos = 'lt',
-  # select cor higher than 0.05 to be displayed.
-  sig.level = 0.05,
-  # set the size of the text lables as 0.9
-  tl.cex = 0.9,
-  # let the text lables be rotated by 30 degrees
-  tl.srt = 30
-) 
-# the code below is simillar to the code above, but it plots the lower triangle of the correlation matrix.
-# arguements that is the same as the code above is not commented.
-  corrplot(
-  cors,
-  method = "shade",
-  type = 'lower',
-  addCoef.col = 'black',
-  order = 'hclust',
-  tl.col = 'black',
-  # add = T means that the plot will be added to the previous plot.
-  add = T,
-  # tl.pos = 'n' means that the text lables will not be displayed(because it's already displayed in the previous plot).
-  tl.pos = 'n',
-  # cl.pos = 'n' means that the color legend will not be displayed(because it's already displayed in the previous plot).
-  cl.pos = 'n'
-)
-# add the title to the plot
-title("Correration Matrix for All Variables")
 ```
 
+As we want to plot a heatmap to have a general understanding of the life expectancy in different countries, we would like to create a new data frame with the average life expectancy of each country among the years.
+```{r}
+# here we create a new data frame called summarized_data, which is the average life expectancy of each country among the years.
+summarized_data = raw_data %>%
+  # group_by function is used to group the data by the variable we want. this helps us to calculate the average life expectancy of each country.
+  group_by(Country) %>%
+  # summarize_if function is used to summarize the data by the variable we want. Here we summarize all the numeric variables by the mean function.
+  summarize_if(is.numeric, mean) %>%
+  # as the character variable haven't been summarized, we would like to merge the character variable into the summarized_data.
+  # left_join function is used to merge two data frames by the variable we want. left means that it would keep all the rows in the first data frame.
+  # distinct function is used to remove the duplicated rows as each country only has one region and one economy status.
+  # Because we are using pipe operator, the first dataframe is summarized_data, the second dataframe is the processed raw_data(select country, region, economy_status from raw_data and remove the duplicated rows).
+  left_join(raw_data %>% select(Country,Region,Economy_status) %>% distinct(), by = "Country")
+
+```
+
+## Exploratory Data Analysis
+
+The dataset contains a lot of variables and can be very complicated. Therefore, we would like to explore the data by plotting a correlation heatmap to explore the relationship between variables(especially with variable life expectancy).
+```{r}
