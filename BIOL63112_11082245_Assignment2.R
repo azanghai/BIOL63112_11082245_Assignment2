@@ -220,10 +220,14 @@ check_model(RQ1.fit2.step$model)
 
 
 # RQ2:What is the impact of education on life expectancy?
-ggplot(data = raw_data,aes(x = Schooling, y = Life_expectancy, color = Region)) +
+ggplot(data = raw_data,aes(x = Schooling, y = Life_expectancy, color = Country)) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  facet_wrap(~Country)
+  facet_wrap(~Region)+
+  theme(legend.position = "none")+
+  labs(title = "Life Expectancy vs Schooling by Region",
+       caption = "Different colors represent different countries",
+       x = "Schooling(Year)",
+       y = "Life Expectancy",)
 
 RQ2.fit1 = lmer(Life_expectancy ~ Schooling+(Schooling|Country), data = raw_data)
 summary(RQ2.fit1)
@@ -231,6 +235,12 @@ summary(RQ2.fit1)
 coef(RQ2.fit1)$Country %>%
   filter(Schooling < 0)
 
+coef(RQ2.fit1)$Country %>%
+  top_n(n = 1, wt = Schooling)
+
+coef(RQ2.fit1)$Country %>%
+  # top_n function is used to select the top 1(n =1) country with the highest coefficient of schooling(wt = Schooling).
+  top_n(n = 1, wt = -Schooling)
 
 # RQ3: 对于饮酒量高的国家，是否会影响预期寿命？
 alcohol_data1 = raw_data %>%
@@ -271,6 +281,15 @@ ggplot() +
   geom_point(aes(x =Alcohol_consumption , y =Life_expectancy,colour = Country),data = alcohol_data5) +
   geom_line(aes(x = Alcohol_consumption, y = AfricaPred,group = Country), data = alcohol_data5, color = "red")
   # draw prediction line use the model
+ggplot() +
+  geom_point(aes(x =Alcohol_consumption , y =Life_expectancy,colour = Country),data = alcohol_data_EU) +
+  geom_line(aes(x = Alcohol_consumption, y = EUpred,group = Country), data = alcohol_data_EU, color = "red") +
+  geom_point(aes(x =Alcohol_consumption , y =Life_expectancy,colour = Country),data = alcohol_data_Asia) +
+  geom_line(aes(x = Alcohol_consumption, y = Asiapred,group = Country), data = alcohol_data_Asia, color = "blue")
+
+
+
+
 
 alcohol_data4 = raw_data %>%
   filter((Region == "European Union") | (Region == "Asia"))
@@ -308,3 +327,9 @@ ggplot(data = GDP_data, aes(x = GDP_per_capita, y = Life_expectancy)) +
 ggplot(data = raw_data, aes(x = BMI, y = Life_expectancy,colour = Country)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE)
+
+model = glm(Life_expectancy ~ GDP_per_capita, data = raw_data,family = Gamma(link = "log"))
+summary(model)
+
+library(fitdistrplus)
+descdist(raw_data$Life_expectancy, boot = 1000)

@@ -10,74 +10,73 @@ bibliography: references.bib
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 # Hackathon
 
-In this assignment, a dataset downloaded from Kaggle was explored. The dataset was about the variables which may predict life expectancy. It was downloaded from https://www.kaggle.com/kumarajarshi/life-expectancy-who. The variables were corrected by the user and were completely updated from reliable source(WHO, World Bank etc.). Meanwhile, based on the dataset, four questions were raised and answered using different models. This file is also uploaded to my [GitHub repository](link:)
+In this assignment, a dataset[@lifeexpa] downloaded from Kaggle was explored. The dataset was about the variables which may predict life expectancy. It was downloaded from <https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated>. The variables were corrected by the user and were completely updated from reliable source(WHO, World Bank etc.). Meanwhile, based on the dataset, four questions were raised and answered using different models. This file is also uploaded to my [GitHub repository](https://github.com/azanghai/BIOL63112_11082245_Assignment2)
 
 ## Data
 
-The data included 21 variables as below:
+The dataset included 21 variables as below:
 
--  **Country**: List of the 179 countries(Sudan, South Sudan and North Korea are omitted due to lack of data)
+-   **Country**: List of the 179 countries(Sudan, South Sudan and North Korea are omitted due to lack of data)
 
--  **Region**: 179 countries are distributed in 9 regions. E.g. Africa, Asia, Oceania, European Union, Rest of Europe etc.
+-   **Region**: 179 countries are distributed in 9 regions. E.g. Africa, Asia, Oceania, European Union, Rest of Europe etc.
 
--  **Year**: Years observed from 2000 to 2015
+-   **Year**: Years observed from 2000 to 2015
 
--  **Infant_deaths**: Represents infant deaths per 1000 population
+-   **Infant_deaths**: Represents infant deaths per 1000 population
 
--  **Under_five_deaths**: Represents deaths of children under five years old per 1000 population
+-   **Under_five_deaths**: Represents deaths of children under five years old per 1000 population
 
--  **Adult_mortality**: Represents deaths of adults per 1000 population
+-   **Adult_mortality**: Represents deaths of adults per 1000 population
 
--  **Alcohol_consumption**: Represents alcohol consumption that is recorded in liters of pure alcohol per capita with 15+ years old
+-   **Alcohol_consumption**: Represents alcohol consumption that is recorded in liters of pure alcohol per capita with 15+ years old
 
--  **Hepatitis_B**: Represents % of coverage of Hepatitis B (HepB3) immunization among 1-year-olds.
+-   **Hepatitis_B**: Represents % of coverage of Hepatitis B (HepB3) immunization among 1-year-olds.
 
--  **Measles**: Represents % of coverage of Measles containing vaccine first dose (MCV1) immunization among 1-year-olds
+-   **Measles**: Represents % of coverage of Measles containing vaccine first dose (MCV1) immunization among 1-year-olds
 
--  **BMI**: Represents the mean BMI of the population
+-   **BMI**: Represents the mean BMI of the population
 
--  **Polio**: Represents % of coverage of Polio (Pol3) immunization among 1-year-olds
+-   **Polio**: Represents % of coverage of Polio (Pol3) immunization among 1-year-olds
 
--  **Diphtheria**: Represents % of coverage of Diphtheria (Dip3) immunization among 1-year-olds
+-   **Diphtheria**: Represents % of coverage of Diphtheria (Dip3) immunization among 1-year-olds
 
--  **Incidents_Hiv**: Incidents of HIV per 1000 population aged 15-49
+-   **Incidents_Hiv**: Incidents of HIV per 1000 population aged 15-49
 
--  **GDP_per_capita**: Represents the GDP per capita in current USD
+-   **GDP_per_capita**: Represents the GDP per capita in current USD
 
--  **Population_mln**: Total population in millions
+-   **Population_mln**: Total population in millions
 
--  **Thinness_ten_nineteen_years**: Prevalence of thinness among adolescents aged 10-19 years. BMI < -2 standard deviations below the median.
+-   **Thinness_ten_nineteen_years**: Prevalence of thinness among adolescents aged 10-19 years. BMI \< -2 standard deviations below the median.
 
--  **Thinness_five_nine_years**: Prevalence of thinness among children aged 5-9 years. BMI < -2 standard deviations below the median.
+-   **Thinness_five_nine_years**: Prevalence of thinness among children aged 5-9 years. BMI \< -2 standard deviations below the median.
 
--  **Schooling**: Average years that people aged 25+ spent in formal education
+-   **Schooling**: Average years that people aged 25+ spent in formal education
 
--  **Economy_status_Developed**: Developed country
+-   **Economy_status_Developed**: Developed country
 
--  **Economy_status_Developing**: Developing country
+-   **Economy_status_Developing**: Developing country
 
--  **Life_expectancy**: Average life expectancy of both genders in different years from 2010 to 2015
+-   **Life_expectancy**: Average life expectancy of both genders in different years from 2010 to 2015
 
 ## Research questions
 
 As we have a lot of variables in the dataset, naturally we wondered which variable could affect life expectancy. Therefore, we raised research question one:
 
--  **Question 1**: What are the factors that affect life expectancy?
+-   **Question 1**: What are the factors that affect life expectancy?
 
-Similar research had found that education could affect life expectancy in Norway. Therefore, we raised research question two to explore the relationship between education and life expectancy:
+Similar research had found that education could affect life expectancy in Norway[@steingrímsdóttir2012]. Therefore, we raised research question two to explore the relationship between education and life expectancy:
 
-- **Question 2**: What is the impact of education on life expectancy?
+-   **Question 2**: What is the impact of education on life expectancy?
 
 An interesting variable in the dataset is alcohol consumption. We wondered whether alcohol consumption has different effects on life expectancy in different regions. Therefore, research question three was raised:
 
-- **Question 3**: What is the relationship between drinking and life expectancy in the European Union and Asia?
+-   **Question 3**: What is the relationship between drinking and life expectancy in the European Union and Asia?
 
-Research has discovered a linear relationship between the GDP of developing countries and their healthcare expenditures, as well as life expectancy. In this context, we aim to further investigate this relationship, leading us to propose the following research question:
+Research[@anassoc2018] has discovered a linear relationship between the GDP of developing countries and their healthcare expenditures, as well as life expectancy. In this context, we aim to further investigate this relationship, leading us to propose the following research question:
 
-- **Question 4**: What is the relationship between life expectancy and GDP?
+-   **Question 4**: What is the relationship between life expectancy and GDP?
 
 ## Packages required for this assignment
 
@@ -110,7 +109,8 @@ library(modelr)
 ```
 
 ## Data wrangling
-```{r}
+
+```{r,fig.align='center'}
 # read the data use function built in dpplr package, also I'm using Rproject, so I can just use the file name.
 raw_data = read_csv("Life-Expectancy-Data-Updated.csv")
 
@@ -122,6 +122,7 @@ vis_dat(raw_data)
 The graph from `visdat` looks good, there is no missing value, and there are only two data types, numeric and character, which is good for further processing.
 
 As there are several variables, we would like to take a look at the summary of each variable to have a basic impression of the data.
+
 ```{r}
 # use skim function from skimr package to check the summary of each variable
 # the %>% is a pipe operator, which is used to connect the output of one function to the input of another function. I find it very useful in this assignment.
@@ -132,7 +133,8 @@ skim(raw_data) %>%
 
 From the summary chat above, we can find that life expectancy varies from 39.4 to 83.8. This indicates that some people may live twice as long as others. This is a huge difference. Therefore, we would like to explore the factors that affect life expectancy. The rest of the variables also look good for further analysis.
 
-As the data almost included every country in the world, we would like to plot a heatmap to see the conditions of life expectancy in different countries. However, some names of the countries require updated to match the map data.
+As the data almost included every country in the world, we would like to plot a Choropleth map to see the conditions of life expectancy in different countries. However, some names of the countries require updated to match the map data.
+
 ```{r}
 #the $ symbol is used to select a column from a data frame,then the [] is used to select the rows that meet the condition.
 raw_data$Country[raw_data$Country == "Turkiye"] = "Turkey"
@@ -156,6 +158,7 @@ raw_data$Country[raw_data$Country =="Central African Republic"] = "Central Afric
 ```
 
 Meanwhile, we would like to merge Economy status into one variable and convert variable into appropriate data type.
+
 ```{r}
 # raw_data = raw_data means that we are modifying and saving the data in the same data frame.
 raw_data = raw_data %>%
@@ -173,11 +176,12 @@ raw_data = raw_data %>%
   mutate(Year = factor(Year)) %>%
   # fct_relevel function is used to reorder the levels of a factor.
   # in this case, we would like to reorder the levels of Economy_status, so that the Developed level is the first level.
-  mutate(Economy_status = fct_relevel(Economy_status, "Developed","Developing"))
+  mutate(Economy_status = fct_relevel(Economy_status ,"Developing","Developed"))
 
 ```
 
-As we want to plot a heatmap to have a general understanding of the life expectancy in different countries, we would like to create a new data frame with the average life expectancy of each country among the years.
+As we want to plot a Choropleth map to have a general understanding of the life expectancy in different countries, we would like to create a new data frame with the average life expectancy of each country among the years.
+
 ```{r}
 # here we create a new data frame called summarized_data, which is the average life expectancy of each country among the years.
 summarized_data = raw_data %>%
@@ -196,7 +200,8 @@ summarized_data = raw_data %>%
 ## Exploratory Data Analysis
 
 The dataset contains a lot of variables and can be very complicated. Therefore, we would like to explore the data by plotting a correlation heatmap to explore the relationship between variables(especially with variable life expectancy).
-```{r}
+
+```{r,fig.align='center',fig.height=15,fig.width=15}
 # the correlation is a variable we use to store the correlation data.
 # lapply function is used to apply a function to each variable.
 # as.numeric function is used to convert the variable into numeric. this is because the correlation function only works with numeric variables.
@@ -270,4 +275,376 @@ corrplot(
 title("Correration Matrix for Variables")
 ```
 
-In the correlation heatmap, the upper triangle only shows the correlation coefficient between variables which is significant(p<0.05), while the lower triangle shows all the correlation coefficient between variables. Darker colour indicates that the correlation coefficient is closer to 1(or -1), while lighter colour indicates that the correlation coefficient is closer to 0. From the correlation heatmap, we can see that the life expectancy is highly correlated with
+In the correlation heatmap, the upper triangle only shows the correlation coefficient between variables which is significant(p\<0.05), while the lower triangle shows all the correlation coefficient between variables. Darker colour indicates that the correlation coefficient is closer to 1(or -1), while lighter colour indicates that the correlation coefficient is closer to 0. From the correlation heatmap, we can see that the life expectancy is highly correlated with `adult mortality`, `infant deaths` and `under five deaths`. Meanwhile, `polio` and `Diphtheria`, `Infant deaths` and `Under five death` seems highly correlated, this may cause a collinearity problem in the regression model.
+
+After exploring the relationship between variables, we would like to have a general idea of the life expectancy of each country. Therefore, a map polt can be created to show the average life expectancy of each country.
+
+```{r,fig.align='center'}
+# load the map data
+# ne_countries function is used to load the map data from the "rnaturalearth" package.
+# scale = "medium" means that we are using the medium scale map.
+# returnclass = "sf" means that the map data will be returned as a sf object(used for plotting).
+world = ne_countries(scale = "medium", returnclass = "sf")
+
+# merge function is used to merge the map data and the summarized data.
+# by.x and by.y is used to specify the variable that will be used to merge the two data sets.
+world_data = merge(world, summarized_data, by.x = "name", by.y = "Country")
+
+# use ggplot2 to plot the Choropleth map
+ggplot(data = world_data) +
+  # geom_sf function is used to plot the map data.
+  # fill = Life_expectancy means that the colour of the map will be filled based on the life expectancy.
+  geom_sf(aes(fill = Life_expectancy)) +
+  # scale_fill_gradient function is used to define the colour gradient. We manually choose the colour from COLORBREWER 2.0. The colour is also safe for colour blind people.
+  scale_fill_gradient(low = "#ccece6", high = "#005824", name = "Life Expectancy") +
+  # here we set the theme as minimal, and set the title of the plot as "Average Life Expectancy by Country"
+  theme_minimal() +
+  labs(title = "Average Life Expectancy by Country") # 设置图表标题
+
+```
+
+From the map, we could learn that the average life expectancy is higher in the developed countries(Australia, Japan, Canada, etc.) than the developing countries(e.g. China, India, etc.). Indicating that the life expectancy may relate to the economic status of the country. Also, it seems that Africa has a lower average life expectancy than other continents around the world. We can also find some missing countries in the map as stated in the beginning of the report.
+
+## RQ1: What are the factors that affect life expectancy?
+
+In order to answer this question, we can construct a linear model and employ a stepwise regression approach based on p-values, seeking the best-fitting model with the highest level of significance. Simultaneously, to incorporate as many variables as possible, we will utilize the forward selection method[@james2021].
+
+```{r}
+# set contrast for Economy_status
+# by setting the contrast, the developing country will be regarded as baseline and the coefficient of the developed country will be the difference between the developed country and the developing country.
+contrasts(summarized_data$Economy_status) = matrix(c(0,1))
+# here we use the lm function to build a full model, the "." here means that we are using all the variables in the summarized_data(except life expectancy) as the independent variables. the "- variable" means that we are not using the variable as the independent variable. This is because these variables have no meaning in the regression model.
+RQ1.fit1 = lm(Life_expectancy ~ . - Region -Country, data = summarized_data)
+# use the summary function to get the summary of the model
+summary(RQ1.fit1)
+```
+
+The average vaccination rate and the average adolescent thinness rate were not defined due to singularities, and thus, their estimates and p-values could not be obtained. This may be due to collinearity problem in the model.
+
+The residual standard error for the model was 1.236, based on 162 degrees of freedom. The multiple R-squared value was 0.9836, and the adjusted R-squared value was 0.9819, indicating a high level of explanatory power in the model. The F-statistic was 605.7 with 16 and 162 degrees of freedom, resulting in a p-value of less than 2.2e-16, which indicates a statistically significant model overall.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# check model will check the assumptions of the model, and return a list of plots which can be used to diagnose the model.
+check_model(RQ1.fit1)
+```
+
+We are not surprised to receive a warning stating, "Model matrix is rank deficient. VIFs may not be sensible," as we have already observed high correlations between some variables in the earlier correlation plot. We will deal with this issue in the subsequent steps. Meanwhile, by focusing on the collinearity plot from check_model, we can proceed with variable selection.
+
+It is obvious that there is a high degree of correlation within vaccination rates and adolescent thinness rates. Therefore, we will compute a new variable based on the means of these variables to replace them, which can help avoid bias that may arise from choosing one variable over the other.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# mutate function is used to create a new variable based on the existing variables.
+# here we create a new variable called "average_vaccination_rate", which is the average of the vaccination rate of Measles, Hepatitis_B, Polio and Diphtheria.
+# rowMeans function is used to calculate the average of the variables in each row.
+# select function is used to select the variables that we want to use. the first argument is the data set("." indicates all variables), and the second argument is the variables that we want to select.
+summarized_data = summarized_data %>%
+  mutate(average_vaccination_rate = rowMeans(select(.,Measles,Hepatitis_B,Polio,Diphtheria))) %>%
+  mutate(average_adcolescent_thinness_rate = rowMeans(select(.,Thinness_ten_nineteen_years,Thinness_five_nine_years)))
+
+# RQ1.fit2 is the model after we create the new variables.
+# the "." and the "- variable" have the same meaning as above.
+RQ1.fit2 = lm(Life_expectancy ~ . - Region -Country - Infant_deaths - Measles - Hepatitis_B - Polio - Diphtheria - Thinness_ten_nineteen_years - Thinness_five_nine_years, data = summarized_data)
+# check the model summary again to see if it is improved.
+summary(RQ1.fit2)
+# dignoise the model again.
+check_model(RQ1.fit2)
+```
+
+From the summary data and the diagnosis plot, we can infer that the model still keeps a good fit with adjusted R-squared value of 0.982, F-statistic of 884.6 and p-value smaller than 2.2e-16. The residual standard error is 1.229, which is slightly smaller than the previous model. The collinearity problem is solved, and the VIF values are all smaller than 10, indicating that the model is good. Then we can use the stepwise regression to select the best model.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# ols_step_both_p function is used to select the best model based on p-values.
+RQ1.fit2.step = ols_step_forward_p(RQ1.fit2)
+# the ols_step_both_p function will return a list included the best model, here we use "$" to extract the model.
+# the summary function is used to get the summary of the model.
+summary(RQ1.fit2.step$model)
+# dignoise the latest model.
+check_model(RQ1.fit2.step$model)
+```
+
+The residual standard error was 1.227, based on 169 degrees of freedom. The multiple R-squared value was 0.9831, and the adjusted R-squared value was 0.9822, indicating a high level of model fit and explanatory power. The F-statistic was 1093 with 9 and 169 degrees of freedom, resulting in a p-value of less than 2.2e-16, which suggests that the model is statistically significant overall.
+
+Finally, we have identified that the `GDP`, `alcohol consumption` and `economy status` have positive coefficients, indicating that they are positively correlated with life expectancy. On the contrary, the `Adult_mortality`, `Under_five_deaths` ,`BMI` have negative coefficients, indicating that they are negatively correlated with life expectancy. And all the variables mentioned above are statistically significant(p\<0.05 and will influence the life expectancy).
+
+## RQ2: What is the impact of education on life expectancy?
+
+Before we build any model, we can take a look at the relationship between education and life expectancy by using the scatter plot.
+
+```{r,fig.align='center'}
+# ggplot function is used to create a scatter plot.
+# here we use raw_data as it contains most information (rows), as the relation between schooling and life expectancy should not be affected by time(Year).
+# set x-axis as Schooling, y-axis as Life_expectancy, and color as Country.
+ggplot(data = raw_data,aes(x = Schooling, y = Life_expectancy, color = Country)) +
+  # adda a geom_point layer to create the scatter plot.
+  geom_point() +
+  # In order to have a clear view of the plot, we use facet_wrap function to split the plot by Region.
+  facet_wrap(~Region)+
+  # set legend position as none to remove the legend(we do not care about any specific country, only focous on the overall trend).
+  theme(legend.position = "none")+
+  # add a titel, caption and axis labels.
+  labs(title = "Life Expectancy vs Schooling by Region",
+       caption = "Different colors represent different countries",
+       x = "Schooling(Year)",
+       y = "Life Expectancy(Year)",)
+```
+
+From the plot we can infer that there seems to be a positive linear relationship between schooling and life expectancy. And we can proceed to build a linear regression model to test the relationship.
+
+```{r}
+# Here we build a linear mixed model. In the syntax of the formula, life expectancy is the dependent variable, and schooling is the independent variable.
+# Meanwhile, we add a random effect of country to the model, as we have multiple observations for each country and the countries are a subset of all countries in the world.
+# "(Schooling|Country)" also indicates that the intercept for each country is different( different countries have different baseline of life expectancy).
+# The "Schooling" syntax in "(Schooling|Country)" means that we are allowing the slope of the relationship between schooling and life expectancy to vary by country(Education improves life expectancy at different rates in different countries).
+RQ2.fit1 = lmer(Life_expectancy ~ Schooling+(Schooling|Country), data = raw_data)
+# check the model summary.
+summary(RQ2.fit1)
+```
+
+In this model:
+
+The REML criterion at convergence was 9500.8. Random effects included country as a grouping factor, with the following estimates: an intercept variance of 615.2753 (Std.Dev. = 24.8047), a schooling variance of 15.2099 (Std.Dev. = 3.9000), and a correlation of -0.86. The residual variance was 0.7468 (Std.Dev. = 0.8642).
+
+The number of observations was 2864, with 179 groups for the country variable.
+
+The fixed effects revealed a statistically significant positive relationship between schooling and life expectancy. The intercept was estimated at 45.3625 (Std. Error = 1.8938, df = 162.4931, t-value = 23.95, p-value \< 2e-16), while the schooling coefficient was 3.8415 (Std. Error = 0.2961, df = 147.0675, t-value = 12.97, p-value \< 2e-16).
+
+In summary, the linear mixed model demonstrates a statistically significant positive relationship between schooling and life expectancy. The analysis takes into account the random effects of the country variable, which helps account for potential differences among countries. The results suggest that increased schooling is associated with higher life expectancy, supporting the idea that education plays a important role in promoting people's life expectancy.
+
+We are also interested in the coefficient of each country. We would like to find which country exhibits the most significant improvement in life expectancy due to education, and whether there are cases where a country has improved its education level but not its life expectancy.
+
+```{r}
+# use the coef function to extract the coefficients of each country.
+# "$" is used to extract the coefficients of each country.
+coef(RQ2.fit1)$Country %>%
+  # top_n function is used to select the top 1(n =1) country with the highest coefficient of schooling(wt = Schooling).
+  top_n(n = 1, wt = Schooling)
+```
+
+It seems that Eritrea won the first prize during the year 2000 to 2015, as it has the highest coefficient of schooling, indicating that if the schooling increases by 1 year, the life expectancy in Eritrea will increase 22.0918 years.
+
+```{r}
+# the function we use here is similiar to the one above, but we use the lowest coefficient of schooling(wt = -Schooling).
+coef(RQ2.fit1)$Country %>%
+  top_n(n = 1, wt = -Schooling)
+```
+
+Turkmenistan seems to be the worst performer, as it has the lowest coefficient of schooling, indicating that if the schooling increases by 1 year, the life expectancy in Turkmenistan will decrease -2.938484 years. However, after reading the description of this data set, we have found that Turkmenistan has missing values and was replaced by the mean value. Therefore, the result may not be accurate.
+
+## RQ3: What is the relationship between drinking and life expectancy in the European Union and Asia?
+
+Before we build any model or any plot, we would like to filter the data by the regions we are interested in.
+
+```{r}
+# here we create two new data sets, one for European Union and one for Asia.
+# we use the filter function to filter the data by region.
+alcohol_data_EU = raw_data %>%
+  filter(Region == "European Union")
+
+alcohol_data_Asia = raw_data %>%
+  filter(Region == "Asia")
+```
+
+Then we can build a model.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# here we build a linear mixed model. In the syntax of the formula, life expectancy is the dependent variable, and alcohol consumption is the independent variable. Meanwhile, we are letting the intercept of each country vary by country. the reasons are simillar to the model we built in RQ2. However, we are not letting the slope of the relationship between alcohol consumption and life expectancy vary by country, as we are only interested in the overall trend(and it will cause convergence problem if we let the slope vary by country).
+RQ3.fit1 = lmer(Life_expectancy ~ Alcohol_consumption+(1|Country), data = alcohol_data_EU)
+summary(RQ3.fit1)
+check_model(RQ3.fit1)
+```
+
+In this model:
+
+The REML criterion at convergence was 1589.2. Random effects included country as a grouping factor, with the following estimates: an intercept variance of 8.177 (Std.Dev. = 2.860). The residual variance was 1.765 (Std.Dev. = 1.329).
+
+The number of observations was 432, with 27 groups for the country variable.
+
+The fixed effects revealed a statistically significant negative relationship between alcohol consumption and life expectancy. The intercept was estimated at 80.60135 (Std. Error = 0.85124, df = 118.20041, t-value = 94.687, p-value \< 2e-16), while the alcohol consumption coefficient was -0.26746 (Std. Error = 0.05989, df = 427.01896, t-value = -4.466, p-value = 1.02e-05). The diagnose result also indicates that the model is acceptable.
+
+This indicates that increased alcohol consumption is associated with lower life expectancy in the European Union. Every unit of increase in alcohol consumption is associated with a 0.26746 decrease in life expectancy in the European Union.
+
+Then we fit a model for Asia.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# the code is similiar to the one above. The only difference is that we are using the data set for Asia.
+RQ3.fit2 = lmer(Life_expectancy ~ Alcohol_consumption+(1|Country), data = alcohol_data_Asia)
+summary(RQ3.fit2)
+check_model(RQ3.fit2)
+```
+
+In this model:
+
+The REML criterion at convergence was 1857.1. Random effects included country as a grouping factor, with the following estimates: an intercept variance of 26.108 (Std.Dev. = 5.110). The residual variance was 3.184 (Std.Dev. = 1.784).
+
+The number of observations was 432, with 27 groups for the country variable.
+
+The fixed effects revealed a statistically significant positive relationship between alcohol consumption and life expectancy in the Asian dataset. The intercept was estimated at 67.87237 (Std. Error = 1.01445, df = 28.82935, t-value = 66.906, p-value \< 2e-16), while the alcohol consumption coefficient was 0.65891 (Std. Error = 0.09746, df = 429.44025, t-value = 6.761, p-value = 4.49e-11). The diagnose result also indicates that the model is acceptable.
+
+This leads to a opposite conclusion: increased alcohol consumption is associated with higher life expectancy in Asia. Every unit of increase in alcohol consumption is associated with a 0.65891 increase in life expectancy.
+
+To find out why this happens, we would like to plot the relationship and prediction line between alcohol consumption and life expectancy in the European Union and Asia.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# here we add a prediction variable to the data set, which is the predicted life expectancy based on the model we built above.
+# the add_predictions function is used to add the predicted life expectancy to the data set.
+# the var argument is used to name the new variable.
+# as we are allowing each country to have a different intercept, we need to group the data by country before we add the prediction variable.
+alcohol_data_EU  = alcohol_data_EU %>%
+  group_by(Country) %>%
+  add_predictions(RQ3.fit1,var = "EUpred")
+alcohol_data_Asia  = alcohol_data_Asia %>%
+  group_by(Country) %>%
+  add_predictions(RQ3.fit2,var = "Asiapred")
+
+# here we plot the relationship between alcohol consumption and life expectancy in the European Union and Asia.
+# we add multiple layers to the plot, including the points of the data for both region, the prediction line for the European Union, the prediction line for Asia.
+ggplot() +
+  # the first layer is the points of the data for European. The x and y axis is inentified inthe aes function, and the different colour of the points is identified by the Country variable.
+  geom_point(aes(x =Alcohol_consumption , y =Life_expectancy,colour = Country),data = alcohol_data_EU) +
+  # the second layer is the prediction line for the European Union. The x and y axis is inentified inthe aes function, and we use color = "red" to make the line red.
+  geom_line(aes(x = Alcohol_consumption, y = EUpred,group = Country), data = alcohol_data_EU, color = "red") +
+  # the code below is similiar to the code above, but we are plotting the data for Asia and the prediction line for Asia.
+  geom_point(aes(x =Alcohol_consumption , y =Life_expectancy,colour = Country),data = alcohol_data_Asia) +
+  geom_line(aes(x = Alcohol_consumption, y = Asiapred,group = Country), data = alcohol_data_Asia, color = "blue")+
+  # similiar to the plot in RQ2, we add a title, x axis label, y axis label and caption to the plot, and we remove the legend.
+  labs(title = "Relationship between alcohol consumption and life expectancy in the European Union and Asia",
+       x = "Alcohol consumption",
+       y = "Life expectancy",
+       caption = "The red line is the prediction line for the European Union, and the blue line is the prediction line for Asia. Points with different color represent different countries.")+
+  theme(legend.position = "none")
+```
+
+The situation now seems clear: people in the two regions have different alcohol consumption levels. At lower alcohol consumption levels, people's life expectancy tends to be higher, while at higher alcohol consumption levels, their life expectancy is lower. Our two models fitted the data for different levels of alcohol consumption, resulting in contrasting conclusions. We can boldly hypothesize that the impact of alcohol consumption on human life expectancy follows an inverted U-shape. That is, at moderate alcohol consumption levels, people's life expectancy is higher, while at excessive or insufficient consumption levels, their life expectancy is lower. This description seems to align with the characteristics of a quadratic function. We may try fitting the data with a quadratic function($y =\beta_0+ \beta_1 x^2+\beta_2x$) to see if it yields better results than a simple linear function.
+
+```{r}
+# silimar to previous processing, we first filter the data for the European Union and Asia.
+# the "|" symbol is used to indicate "or". Means that we want to select data from the European Union and Asia.
+alcohol_data_Asia_EU = raw_data %>%
+  filter((Region == "European Union") | (Region == "Asia"))
+
+# The model looks similar, but we are using the I() function to indicate that we want to use the square of alcohol consumption as a predictor. This is because "^" has a special meaning in R.We can also use the poly() function to fit a quadratic model, but we will not do that here.
+RQ3.fit3 = lm(Life_expectancy ~ I(Alcohol_consumption^2) + Alcohol_consumption, data = alcohol_data_Asia_EU)
+summary(RQ3.fit3)
+
+# here we fit a simple linear model, to see if the linear model is better than the quadratic model.
+RQ3.fit4 = lm(Life_expectancy ~ Alcohol_consumption, data = alcohol_data_Asia_EU)
+summary(RQ3.fit4)
+```
+
+For RQ3.fit3:
+
+Residuals ranged from a minimum of -15.2441 to a maximum of 12.9155. The intercept was estimated at 66.770534 (Std. Error = 0.323728, t-value = 206.255, p-value \< 2e-16), and the coefficient of Alcohol_consumption\^2 was -0.075535 (Std. Error = 0.008804, t-value = -8.579, p-value \< 2e-16). The coefficient of Alcohol_consumption was 1.793490 (Std. Error = 0.120649, t-value = 14.865, p-value \< 2e-16).
+
+The residual standard error was 4.633 on 861 degrees of freedom. The multiple R-squared value was 0.4339, and the adjusted R-squared value was 0.4326. The F-statistic was 330 on 2 and 861 DF, with a p-value of \< 2.2e-16.
+
+For RQ3.fit4:
+
+Residuals ranged from a minimum of -13.6629 to a maximum of 12.9254. The intercept was estimated at 68.3227 (Std. Error = 0.2795, t-value = 244.42, p-value \< 2e-16), and the coefficient of Alcohol_consumption was 0.7977 (Std. Error = 0.0343, t-value = 23.26, p-value \< 2e-16).
+
+The residual standard error was 4.825 on 862 degrees of freedom. The multiple R-squared value was 0.3855, and the adjusted R-squared value was 0.3848. The F-statistic was 540.9 on 1 and 862 DF, with a p-value of \< 2.2e-16.
+
+We can also use the compare_performance function to compare the performance of the two models with more performance indices.
+
+```{r}
+# compare_performance is a function from the "performance" package. It can be used to compare the performance of different models.
+compare_performance(RQ3.fit3,RQ3.fit4)
+```
+
+As expected, the quadratic model is better than the linear model. The quadratic model has better performance in all indicators. This proves our assumption about the relationship between alcohol consumption and life expectancy in the European Union and Asia. Now we can plot the quadratic model to see how it fits the data.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# similar to the previous plot, we first add the prediction line to the data frame.
+# here we use "$" to directly add a new column to the data frame.
+alcohol_data_Asia_EU$pred = predict(RQ3.fit3)
+
+# similar to the previous plot, we use the ggplot function to plot the data.and we use the geom_line function to add a red prediction line to the plot.
+ggplot(data = alcohol_data_Asia_EU, aes(x = Alcohol_consumption, y = Life_expectancy)) +
+  geom_point() +
+  geom_line(aes(y = pred), color = "red")+
+        labs(title = "Relationship between alcohol consumption and life expectancy in the European Union and Asia",
+             x = "Alcohol consumption",
+             y = "Life expectancy",
+                caption = "The red line is the prediction line for the European Union and Asia fit by a quadratic model")
+```
+
+The model captures the trends in the data and performs better than the simple linear model. However, it is worth noting that the model may not represent the true underlying trends in the data. On the one hand, there may be factors we have not captured that could influence the independent variable. On the other hand, the pattern we have assumed may be an artificial construct; the real-world patterns could be simpler or more complex. This is merely one observation of the unknown world by humans.
+
+## RQ4: What is the relationship between life expectancy and GDP?
+
+Before we fit any models, we can plot the data to see if there is any relationship between life expectancy and GDP.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# similar to the previous plot, we use the ggplot function to plot the data. and we use the geom_point function to add points to the plot. The points are colored according to the economy status of the country.
+ggplot(data = raw_data, aes(x = GDP_per_capita, y = Life_expectancy,colour = Economy_status)) +
+  geom_point() +
+  labs(title = "Relationship between life expectancy and GDP",
+       x = "GDP per capita",
+       y = "Life expectancy",
+       caption = "Pink points indicate developed countries, Green points indicate developing countries")+
+  # here we use the scale_colour_manual function to manually set the color of the points. The colours are choused from the ColorBrewer 2.0 to ensure friendly to colorblind people.
+  scale_colour_manual(values = c("Developed" = "#e9a3c9", "Developing" = "#a1d76a"))+
+  theme(legend.position = "none")
+```
+
+The plot shows that there seems a log-linear relationship between life expectancy and GDP. We can fit a model to the data to see if the model fits the data well.
+
+```{r,fig.align='center',fig.height=10,fig.width=10}
+# here we fit a log-linear model to the data. The I() is used to protect variable we specified.
+RQ4.fit1 = lm(Life_expectancy ~ I(log(GDP_per_capita)), data = raw_data)
+summary(RQ4.fit1)
+
+# Meanwhile wo can plot the model to see how it fits the data.
+GDP_data = raw_data %>%
+  add_predictions(RQ4.fit1)
+
+# similar to the previous plot, we use the ggplot function to plot the data.and we use the geom_line function to add a red prediction line to the plot.
+ggplot(data = GDP_data, aes(x = GDP_per_capita, y = Life_expectancy)) +
+  geom_point() +
+  geom_line(aes(y = pred), color = "red")+
+    labs(title = "Relationship between life expectancy and GDP",
+         x = "GDP per capita",
+         y = "Life expectancy",
+         caption = "The red line is the prediction line fit by model RQ4.fit1")
+```
+
+In the simple linear regression model, life expectancy was regressed on the natural logarithm of GDP per capita. The coefficient of determination (R-squared) is 0.6329, indicating that 63.29% of the variability in life expectancy can be explained by the natural logarithm of GDP per capita. The adjusted R-squared value is 0.6328, which takes into account the number of predictors in the model.
+
+The intercept is 25.33780, and the slope is 5.18114. This means that, on average, for every unit increase in the natural logarithm of GDP per capita, life expectancy increases by 5.18114 years, holding all other factors constant.
+
+The standard error of the intercept is 0.62860, while the standard error of the slope is 0.07376. The t-values for the intercept and the slope are 40.31 and 70.25, respectively. Both coefficients are highly significant, with p-values less than 2.2e-16.
+
+The residual standard error of the model is 5.7, representing the average distance between the observed values of life expectancy and the predicted values from the model.
+
+In conclusion, the analysis reveals a strong, positive, and statistically significant relationship between life expectancy and the natural logarithm of GDP per capita. The model explains approximately 63.28% of the variability in life expectancy, highlighting the importance of GDP per capita as a predictor of life expectancy. However, it is important to consider other factors not included in this model that may also influence life expectancy.
+
+It is worth mentioning that in Andrew's classes, there is a discussion on the risks associated with log transformation of variables, as the transformed variables may lose their original meaning. Moreover, in generalized linear models, this may lead to various issues[@lo2015]. However, it is important to note that our focus in this model fitting is on the relationship between the two variables, and we have only fitted a simple linear model. On this basis, the attempted transformation can be considered acceptable, as also mentioned in the article.
+
+Furthermore, the emphasis in Andrew's course is on the risks of transforming variables when the dependent variable follows a Gamma distribution (the article mainly discusses reaction times, RT, which follow a Gamma distribution). However, the life expectancy in this case does not follow a Gamma distribution (the histogram shows that the data is not right-skewed, i.e., the long tail is not on the right side), so we believe this transformation is acceptable. The fact that the distribution of life expectancy is not close to Gamma is also the reason we did not use the glm() function in the previous section but opted for the more flexible lm() function instead.
+
+```{r,echo=FALSE,fig.align='center',fig.height=8,fig.width=8}
+ggplot(data = raw_data, aes(x = Life_expectancy)) +
+  geom_histogram(binwidth = 0.5) +
+  labs(title = "Histogram of life expectancy"
+       , x = "Life expectancy"
+       , y = "Frequency")
+```
+
+A model with a Gamma distribution is also fitted below, but due to the data not following a Gamma distribution, the model fit is not as good as the model fitted with the lm() function. The Normality of residuals also indicates that the model RQ4.fit2 is not a good fit.
+
+```{r,fig.align='center',fig.width=10,fig.height=10}
+# here we fit a generalized linear model to the data. and specify the family as Gamma.Meanwhile link = log indicates that the link function is log. In this case, a logarithmic link function is used to represent the model's prediction of the dependent variable's logarithmic value as a linear function of the independent variable.
+RQ4.fit2 = glm(Life_expectancy ~ GDP_per_capita, data = raw_data,family = Gamma(link = "log"))
+check_model(RQ4.fit2)
+# compare_performance is a function from the performance package. It is used to compare the performance of two models. Here we use it to compare the performance of RQ4.fit1 and RQ4.fit2. The rank = TRUE indicates that the function will rank the models according to overall performance.
+compare_performance(RQ4.fit1, RQ4.fit2, rank = TRUE)
+```
+
+The results above indicate that the RQ4.fit1 model demonstrates better performance in terms of information interpretation(lower AIC and BIC with a higher performance score).
+
+## Discussion and Reflection
+
+In this assignment, we explored the relationship between life expectancy and various variables, using linear models to address four proposed research questions. Throughout the process, we identified several potential variables related to life expectancy. Interestingly, the life expectancy in our dataset does not appear to follow a Gamma distribution, which is commonly observed in survival times, waiting times, and response times in fields like biology and medicine. Visually, the distribution of human life expectancy resembles a minimum extreme value distribution, often used for system failure times, such as chain breaking strengths. This suggests that a small portion of chains with poor quality will break under lower stress, while most chains can achieve their expected strength. Applying this insight to our understanding of life expectancy implies that there is a limit to human life span, with the majority of people's life expectancy situated near this limit (explaining the left-skewed distribution, with the tail on the left). Factors contributing to this limit exist, and our study found that alcohol consumption may be one such limiting factor for human life expectancy. This aligns with common knowledge, as excessive alcohol consumption can lead to liver disease, heart disease, cancer, and other conditions that shorten human life. We also discovered potential variables related to life expectancy, such as GDP per capita, income, and average years of education. The identification of these variables aligns with our understanding, as GDP per capita, income, and average years of education are crucial indicators of a nation's development level. The level of development can impact a nation's healthcare, sanitation, and diet quality, which in turn affects human life expectancy.
+
+During this data analysis, I experienced the meaning of "model building is both a science and an art" [@box1976]. Exploring natural data variables (which are often human-defined and not naturally occurring) within datasets requires a clear goal and rational understanding; analysis without a target becomes increasingly chaotic. Model building also demands a degree of artistry, as we use mathematical methods to describe phenomena represented in nature and search for relationships and predictions using elegant math functions. With numerous mathematical methods and tools at our disposal, we are reminded of George Box's statement that "all models are wrong, but some are useful." Our models may never perfectly describe natural phenomena, but through them, we can predict the future and guide decision-making, which is where their value lies.
+
+## Reference
